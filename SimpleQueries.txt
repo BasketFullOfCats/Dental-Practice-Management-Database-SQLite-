@@ -1,0 +1,169 @@
+-- Query 1: Retrieve Patients with Medications
+SELECT 
+    Patients.SSN,
+    People.FirstName, 
+    People.LastName, 
+    Medications.MedicationsID, 
+    Medications.ActiveMeds,
+    Medications.Date 
+FROM 
+    Patients 
+JOIN 
+    People ON Patients.SSN = People.SSN
+JOIN 
+    Medications ON Patients.SSN = Medications.SSN 
+ORDER BY
+    People.LastName ASC, Medications.ActiveMeds ASC;
+
+-- Query 2: Retrieve Patients with Insurance
+SELECT
+    Patients.SSN,
+    Patients.DateOfBirth,
+    People.FirstName,
+    People.LastName,
+    People.PhoneNumber,
+    Patients.PolicyID 
+FROM 
+    Patients
+JOIN 
+    Insurance ON Patients.PolicyID = Insurance.PolicyID 
+JOIN 
+    People ON Patients.SSN = People.SSN
+WHERE
+    Insurance.PolicyNumber = 'POL-1001'; 
+
+-- Query 3: 
+SELECT 
+    Treatments.TreatmentID, 
+    Treatments.StandardizedCost, 
+    Treatments.EstimatedTime, 
+    Appointments.Date 
+FROM 
+    MedicalStaffPerformedOnTreatments 
+JOIN 
+    MedicalStaff ON MedicalStaffPerformedOnTreatments.SSN = MedicalStaff.SSN 
+JOIN 
+    Treatments ON MedicalStaffPerformedOnTreatments.TreatmentID = Treatments.TreatmentID 
+JOIN 
+    Appointments ON Treatments.TreatmentID = Appointments.TreatmentID
+JOIN
+    People ON MedicalStaff.SSN = People.SSN
+WHERE 
+    MedicalStaff.MedType = 'Doctor' AND People.LastName = 'Smilow';
+
+
+-- Query 4: Retrieve Billing Records for Patients
+SELECT 
+    br.BillingRecordID,
+    br.Date AS InvoiceDate,
+    br.ProceduresPerformed,
+    br.MedicalSupervisors,
+    p.SSN,
+    p.FirstName,
+    p.LastName,
+    p.PhoneNumber
+FROM
+    BillingRecord br
+JOIN
+    Patients pt ON br.PolicyID = pt.PolicyID
+JOIN
+    People p ON pt.SSN = p.SSN
+WHERE
+    br.Date < CURRENT_DATE;
+
+-- Query 5: Calculate Revenue for Patients
+SELECT 
+    People.FirstName, 
+    People.LastName, 
+    Patients.SSN, 
+    SUM(Payment.PaymentAmount) AS Revenue
+FROM 
+    Payment
+JOIN
+    Patients ON Patients.SSN = Payment.SSN
+JOIN 
+    People ON Patients.SSN = People.SSN
+GROUP BY 
+    Patients.SSN
+ORDER BY 
+    Revenue DESC
+LIMIT 5;
+
+-- Query 6: Count Procedures Managed by Medical Supervisors
+WITH Treatments_All AS (
+    SELECT a.*, t.StandardizedCost, t.EstimatedTime
+    FROM Appointments a
+    JOIN Treatments t ON a.TreatmentID = t.TreatmentID
+),
+Staff_Treatments AS (
+    SELECT ta.*, mst.SSN
+    FROM Treatments_All ta
+    JOIN MedicalStaffPerformedOnTreatments mst ON ta.TreatmentID = mst.TreatmentID
+),
+Staff_Treat_Count AS (
+    SELECT 
+        SSN,
+        COUNT(TreatmentID) AS Total
+    FROM Staff_Treatments
+    GROUP BY SSN
+),
+Staff_Under_5 AS (
+    SELECT *
+    FROM Staff_Treat_Count
+    WHERE Total < 5
+),
+Doctor_Under_5 AS (
+    SELECT su5.Total, p.FirstName, p.LastName
+    FROM Staff_Under_5 su5
+    JOIN People p ON su5.SSN = p.SSN
+)
+SELECT 
+    FirstName, 
+    LastName, 
+    Total
+FROM Doctor_Under_5;
+
+
+
+-- Query 7: Get the Most Frequent Procedure and Its Total Payment
+SELECT
+    br.ProceduresPerformed,
+    COUNT(br.ProceduresPerformed) AS ProcedureCount,
+    t.StandardizedCost AS ProcedurePrice,
+    SUM(p.PaymentAmount) AS TotalPayment
+FROM
+    BillingRecord br
+JOIN 
+    Payment p ON br.BillingRecordID = p.BillingRecordID
+JOIN 
+    Treatments t ON CAST(br.ProceduresPerformed AS INT) = t.TreatmentID
+GROUP BY 
+    br.ProceduresPerformed, 
+    t.StandardizedCost
+ORDER BY 
+    TotalPayment DESC;
+
+
+-- Query 8: Summary of Payment Types
+SELECT
+    Type,
+    COUNT(*) AS PaymentCount,
+    SUM(PaymentAmount) AS TotalAmount
+FROM
+    Payment
+GROUP BY
+    Type;
+
+-- Query 9: Insurance Plan Count
+SELECT 
+    Insurance.PolicyName,
+    COUNT(Patients.SSN) AS Plan_Count
+FROM 
+    Patients
+JOIN 
+    Insurance ON Patients.PolicyID = Insurance.PolicyID
+GROUP BY 
+    Insurance.PolicyName
+ORDER BY 
+    Plan_Count DESC
+LIMIT 1;

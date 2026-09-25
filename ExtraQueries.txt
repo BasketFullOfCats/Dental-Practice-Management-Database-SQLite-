@@ -1,0 +1,86 @@
+-- Query 1: List the Most Common Allergies of Patients
+-- Description: Create a list of the most common allergies reported by patients, sorted by frequency.
+
+SELECT 
+    AllergyInfo, 
+    COUNT(AllergyInfo) AS Frequency
+FROM 
+    People
+JOIN 
+    AllergyForm ON People.SSN = AllergyForm.SSN
+GROUP BY 
+    AllergyInfo
+ORDER BY 
+    Frequency DESC;
+
+---------------------------------------------------------------------
+
+-- Query 2: List all patients along with their most recent appointment date, including those who have never made an appointment.
+-- Description: Retrieve a list of all patients with their most recent appointment date, or NULL if they haven’t scheduled any.
+
+SELECT 
+    patient.SSN, 
+    people.FirstName, 
+    people.LastName, 
+    MAX(appointment.Date) AS MostRecentAppointment
+FROM 
+    Patients patient
+LEFT JOIN 
+    Appointments appointment ON patient.SSN = appointment.SSN
+JOIN 
+    People people ON patient.SSN = people.SSN
+GROUP BY 
+    patient.SSN, people.FirstName, people.LastName
+ORDER BY 
+    people.LastName ASC, people.FirstName ASC;
+
+
+
+---------------------------------------------------------------------
+
+-- Query 3: Identify medical staff who haven’t performed any treatments in the past year, along with their job titles.
+-- Description: Find all medical staff and their job titles who have not performed treatments in the past year.
+SELECT 
+    staff.SSN, 
+    people.FirstName, 
+    people.LastName, 
+    staff.MedType AS JobTitle
+FROM 
+    MedicalStaff staff
+JOIN 
+    People people ON staff.SSN = people.SSN
+LEFT JOIN 
+    MedicalStaffPerformedOnTreatments mspt ON staff.SSN = mspt.SSN
+LEFT JOIN 
+    Treatments treatment ON mspt.TreatmentID = treatment.TreatmentID
+WHERE 
+    treatment.TreatmentID IS NULL 
+    OR treatment.EstimatedTime < DATE('now', '-1 year')
+GROUP BY 
+    staff.SSN, people.FirstName, people.LastName, staff.MedType
+ORDER BY 
+    people.LastName ASC, people.FirstName ASC;
+
+
+
+
+---------------------------------------------------------------------
+
+--BTree Query to see who handled cash payments, how many & how much
+SELECT 
+    ReceivedBy,
+    COUNT(*) AS CashPayments,
+    SUM(PaymentAmount) AS TotalCashHandled
+FROM 
+    Payment
+WHERE 
+    Type = 'Cash'
+GROUP BY 
+    ReceivedBy
+ORDER BY 
+    TotalCashHandled DESC;
+    
+--Hash Index Query to search people based on phone number
+SELECT *
+FROM People
+WHERE PhoneNumber = '555-0123';

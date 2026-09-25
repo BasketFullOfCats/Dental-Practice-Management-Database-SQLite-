@@ -1,0 +1,20 @@
+--do 3 inserts
+Insert INTO PEOPLE (SSN, Firstname, Lastname, Phonenumber)
+VALUES('987987987', 'Alex', 'Johnson', '555-9876');
+
+INSERT INTO Insurance(policyid, policynumber, policyname)
+VALUES (8, 'POL-1008', 'Mario Universal Life Plan');
+
+INSERT INTO Patients (SSN, PolicyID, DateOfBirth)
+VALUES ('123123123', 8, '1990-05-05');
+
+
+-- 3 DELETE STATEMENTS (in correct odrer):
+DELETE FROM Patients WHERE SSN = '123123123';
+DELETE FROM Insurance WHERE PolicyID = 8;
+DELETE FROM People WHERE SSN = '987987987';
+
+
+SELECT * FROM People WHERE SSN = '987987987';
+SELECT * FROM Insurance WHERE policyid = 8;
+SELECT * FROM Patients WHERE SSN = '123123123'

@@ -1,0 +1,238 @@
+-- Drop tables if they exist (for re-creation purposes)
+DROP TABLE IF EXISTS Payment;
+DROP TABLE IF EXISTS CardPayment;
+DROP TABLE IF EXISTS BankPayment;
+DROP TABLE IF EXISTS InsurancePayment;
+DROP TABLE IF EXISTS Insurance;
+DROP TABLE IF EXISTS Reviews;
+DROP TABLE IF EXISTS Employees;
+DROP TABLE IF EXISTS EmployeeEvaluatedByReviews;
+DROP TABLE IF EXISTS Admin;
+DROP TABLE IF EXISTS License;
+DROP TABLE IF EXISTS MedicalStaff;
+DROP TABLE IF EXISTS BillingRecord;
+DROP TABLE IF EXISTS MedicalStaffHasLicense;
+DROP TABLE IF EXISTS MedicalStaffPerformedOnTreatments;
+DROP TABLE IF EXISTS Inventory;
+DROP TABLE IF EXISTS Treatments;
+DROP TABLE IF EXISTS InventoryUsedForTreatments;
+DROP TABLE IF EXISTS Appointments;
+DROP TABLE IF EXISTS Patients;
+DROP TABLE IF EXISTS People;
+DROP TABLE IF EXISTS EmergencyContact;
+DROP TABLE IF EXISTS Address;
+DROP TABLE IF EXISTS PeopleLiveAtAddresses;
+DROP TABLE IF EXISTS MedicalHistory;
+DROP TABLE IF EXISTS XRay;
+DROP TABLE IF EXISTS Medications;
+DROP TABLE IF EXISTS AllergyForm;
+DROP TABLE IF EXISTS HIPAAForm;
+
+DROP INDEX IF EXISTS idx_payment_type;
+DROP INDEX IF EXISTS idx_payment_recievedby;
+
+
+CREATE TABLE IF NOT EXISTS People (
+    SSN CHAR(9) PRIMARY KEY,
+    FirstName VARCHAR(100) NOT NULL,
+    LastName VARCHAR(100) NOT NULL,
+    PhoneNumber VARCHAR(15)
+);
+
+CREATE TABLE IF NOT EXISTS Address (
+    AddressID INT PRIMARY KEY,
+    Street TEXT NOT NULL,
+    City TEXT NOT NULL,
+    State TEXT NOT NULL,
+    ZipCode CHAR(5)
+);
+
+CREATE TABLE IF NOT EXISTS PeopleLiveAtAddresses (
+    SSN CHAR(9),
+    AddressID INT,
+    PRIMARY KEY (SSN, AddressID),
+    FOREIGN KEY (SSN) REFERENCES People(SSN),
+    FOREIGN KEY (AddressID) REFERENCES Address(AddressID)
+);
+
+CREATE TABLE IF NOT EXISTS Insurance (
+    PolicyID INT PRIMARY KEY,
+    PolicyNumber VARCHAR(50) NOT NULL UNIQUE,
+    PolicyName TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Patients (
+    SSN CHAR(9) PRIMARY KEY,
+    PolicyID INT,
+    DateOfBirth DATE NOT NULL,
+    FOREIGN KEY (SSN) REFERENCES People(SSN),
+    FOREIGN KEY (PolicyID) REFERENCES Insurance(PolicyID)
+);
+
+CREATE TABLE IF NOT EXISTS MedicalStaff (
+    SSN CHAR(9) PRIMARY KEY,
+    MedType VARCHAR(50) NOT NULL,
+    Salary FLOAT(10, 2),
+    FOREIGN KEY (SSN) REFERENCES People(SSN)
+);
+
+CREATE TABLE IF NOT EXISTS License (
+    LicenseNumber INT PRIMARY KEY,
+    Expiration DATE NOT NULL,
+    Institution TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS MedicalStaffHasLicense (
+    SSN CHAR(9),
+    LicenseNumber INT,
+    PRIMARY KEY (SSN, LicenseNumber),
+    FOREIGN KEY (LicenseNumber) REFERENCES License(LicenseNumber),
+    FOREIGN KEY (SSN) REFERENCES People(SSN)
+);
+
+CREATE TABLE IF NOT EXISTS Treatments (
+    TreatmentID INT PRIMARY KEY,
+    StandardizedCost FLOAT(10, 2) NOT NULL,
+    EstimatedTime INT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS BillingRecord (
+    BillingRecordID INT PRIMARY KEY,
+    Date DATE NOT NULL,
+    ProceduresPerformed INT NOT NULL,
+    MedicalSupervisors TEXT NOT NULL,
+    PolicyID INT,
+    FOREIGN KEY (PolicyID) REFERENCES Insurance(PolicyID)
+);
+
+CREATE TABLE IF NOT EXISTS Payment (
+    PaymentID INT PRIMARY KEY,
+    PaymentAmount DECIMAL(10, 2) NOT NULL,
+    Type VARCHAR(50) CHECK (Type IN ('Cash', 'Check', 'Card', 'Insurance')),
+    ReceivedBy VARCHAR(100) NOT NULL,
+    SSN CHAR(9),
+    BillingRecordID INT,
+    FOREIGN KEY (SSN) REFERENCES People(SSN),
+    FOREIGN KEY (BillingRecordID) REFERENCES BillingRecord(BillingRecordID)
+);
+
+CREATE TABLE IF NOT EXISTS CardPayment (
+    PaymentID INT PRIMARY KEY,
+    CardInfo VARCHAR(50) NOT NULL,
+    FOREIGN KEY (PaymentID) REFERENCES Payment(PaymentID)
+);
+
+CREATE TABLE IF NOT EXISTS BankPayment (
+    PaymentID INT PRIMARY KEY,
+    BankInfo VARCHAR(50) NOT NULL,
+    FOREIGN KEY (PaymentID) REFERENCES Payment(PaymentID)
+);
+
+CREATE TABLE IF NOT EXISTS InsurancePayment (
+    PaymentID INT PRIMARY KEY,
+    PolicyNumber VARCHAR(50) NOT NULL,
+    FOREIGN KEY (PaymentID) REFERENCES Payment(PaymentID)
+);
+
+CREATE TABLE IF NOT EXISTS Reviews (
+    ReviewID INT PRIMARY KEY,
+    Experience TEXT NOT NULL,
+    ProcedureName VARCHAR(100),
+    SSN CHAR(9),
+    FOREIGN KEY (SSN) REFERENCES People(SSN)
+);
+
+CREATE TABLE IF NOT EXISTS Employees (
+    SSN CHAR(9) PRIMARY KEY,
+    EmployeeType VARCHAR(50) NOT NULL,
+    Salary FLOAT(10, 2),
+    FOREIGN KEY (SSN) REFERENCES People(SSN)
+);
+
+CREATE TABLE IF NOT EXISTS EmployeeEvaluatedByReviews (
+    SSN CHAR(9) PRIMARY KEY,
+    ReviewID INT NOT NULL,
+    FOREIGN KEY (ReviewID) REFERENCES Reviews(ReviewID), 
+    FOREIGN KEY (SSN) REFERENCES Employees(SSN)
+);
+
+CREATE TABLE IF NOT EXISTS Admin (
+    SSN CHAR(9) PRIMARY KEY,
+    AdminType VARCHAR(50) NOT NULL,
+    Salary FLOAT(10, 2),
+    FOREIGN KEY (SSN) REFERENCES People(SSN)
+);
+
+CREATE TABLE IF NOT EXISTS MedicalHistory (
+    MedicalHistoryID INT PRIMARY KEY,
+    MedicalInfo TEXT NOT NULL,
+    Date DATE NOT NULL,
+    SSN CHAR(9),
+    FOREIGN KEY (SSN) REFERENCES People(SSN)
+);
+
+CREATE TABLE IF NOT EXISTS XRay (
+    XRayID INT PRIMARY KEY,
+    XRayInfo TEXT NOT NULL,
+    Date DATE NOT NULL,
+    SSN CHAR(9),
+    FOREIGN KEY (SSN) REFERENCES People(SSN)
+);
+
+CREATE TABLE IF NOT EXISTS Medications (
+    MedicationsID INT PRIMARY KEY,
+    ActiveMeds TEXT NOT NULL,
+    Date DATE NOT NULL,
+    SSN CHAR(9),
+    FOREIGN KEY (SSN) REFERENCES People(SSN)
+);
+
+CREATE TABLE IF NOT EXISTS AllergyForm (
+    AllergyFormID INT PRIMARY KEY,
+    AllergyInfo TEXT NOT NULL,
+    Date DATE NOT NULL,
+    SSN CHAR(9),
+    FOREIGN KEY (SSN) REFERENCES People(SSN)
+);
+
+CREATE TABLE IF NOT EXISTS HIPAAForm (
+    HIPAAFormID INT PRIMARY KEY,
+    HIPAAInfo TEXT NOT NULL,
+    Date DATE NOT NULL,
+    SSN CHAR(9),
+    FOREIGN KEY (SSN) REFERENCES People(SSN)
+);
+
+CREATE TABLE IF NOT EXISTS Appointments (
+    AppointmentID INT PRIMARY KEY,
+    Date DATE NOT NULL,
+    SSN CHAR(9),
+    TreatmentID INT,
+    FOREIGN KEY (SSN) REFERENCES People(SSN),
+    FOREIGN KEY (TreatmentID) REFERENCES Treatments(TreatmentID)
+);
+
+CREATE TABLE IF NOT EXISTS Inventory (
+    ItemName VARCHAR(256) PRIMARY KEY,
+    Quantity INT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS InventoryUsedForTreatments (
+    ItemName VARCHAR(256),
+    TreatmentID INT,
+    QuantityUsed INT NOT NULL,
+    PRIMARY KEY (ItemName, TreatmentID),
+    FOREIGN KEY (ItemName) REFERENCES Inventory(ItemName),
+    FOREIGN KEY (TreatmentID) REFERENCES Treatments(TreatmentID)
+);
+
+CREATE TABLE IF NOT EXISTS MedicalStaffPerformedOnTreatments (
+    SSN CHAR(9),
+    TreatmentID INT,
+    PRIMARY KEY (SSN, TreatmentID),
+    FOREIGN KEY (TreatmentID) REFERENCES Treatments(TreatmentID),
+    FOREIGN KEY (SSN) REFERENCES People(SSN)
+);
+
+CREATE INDEX IF NOT EXISTS idx_payment_type ON Payment(Type);
+CREATE INDEX IF NOT EXISTS idx_payment_receivedby ON Payment(ReceivedBy);

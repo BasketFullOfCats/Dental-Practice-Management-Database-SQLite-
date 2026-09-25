@@ -1,0 +1,202 @@
+INSERT INTO People (SSN, FirstName, LastName, PhoneNumber) VALUES
+('123456789', 'John', 'Doe', '555-0123'),
+('234567890', 'Jane', 'Smith', '555-0456'),
+('345678901', 'Emily', 'Jones', '555-0789'),
+('456789012', 'Michael', 'Brown', '555-1456'),
+('567890123', 'Sarah', 'Davis', '555-1280'),
+('678901234', 'Christopher', 'Taylor', '555-2356'),
+('789012345', 'Jessica', 'Wilson', '555-3456'),
+('890123456', 'David', 'Lee', '555-6789'),
+('901234567', 'Jennifer', 'Martinez', '555-7890'),
+('123456780', 'William', 'Garcia', '555-0129'),
+('999999999', 'John', 'Smilow', '555-9999');
+
+INSERT INTO Address (AddressID, Street, City, State, ZipCode) VALUES
+(1, '123 Elm St', 'Springfield', 'IL', '62701'),
+(2, '456 Maple Rd', 'Springfield', 'IL', '62702'),
+(3, '789 Oak Ave', 'Springfield', 'IL', '62703'),
+(4, '321 Pine St', 'Springfield', 'IL', '62704'),
+(5, '654 Cedar St', 'Springfield', 'IL', '62705');
+
+INSERT INTO PeopleLiveAtAddresses (SSN, AddressID) VALUES
+('123456789', 1),
+('234567890', 2),
+('345678901', 3),
+('456789012', 4),
+('567890123', 5),
+('678901234', 1),
+('789012345', 2),
+('890123456', 3),
+('901234567', 4),
+('123456780', 5);
+
+INSERT INTO Insurance (PolicyID, PolicyNumber, PolicyName) VALUES
+(1, 'POL-1001', 'Basic Health Plan'),
+(2, 'POL-1002', 'Basic Health Plan'),
+(3, 'POL-1003', 'Dental Care Plan'),
+(4, 'POL-1004', 'Vision Care Plan'),
+(5, 'POL-1005', 'Family Health Plan'),
+(6, 'POL-1006', 'Senior Citizen Plan'),
+(7, 'POL-1007', 'OSU health plan');
+
+
+INSERT INTO Patients (SSN, PolicyID, DateOfBirth) VALUES
+('123456789', 1, '1980-01-01'),
+('234567890', 2, '1990-02-02'),
+('345678901', 3, '1985-03-03'),
+('456789012', 4, '1972-04-04'),
+('567890123', 5, '2000-05-05');
+
+INSERT INTO MedicalStaff (SSN, MedType, Salary) VALUES
+('678901234', 'Nurse', 60000.00),
+('789012345', 'Doctor', 120000.00),
+('890123456', 'Technician', 50000.00),
+('901234567', 'Therapist', 70000.00),
+('123456780', 'Surgeon', 150000.00),
+('999999999', 'Doctor', 120000.00);
+
+INSERT INTO License (LicenseNumber, Expiration, Institution) VALUES
+(1, '2024-12-31', 'Medical Institution A'),
+(2, '2025-06-30', 'Medical Institution B'),
+(3, '2023-09-30', 'Medical Institution C'),
+(4, '2024-11-15', 'Medical Institution D'),
+(5, '2025-03-01', 'Medical Institution E');
+
+INSERT INTO MedicalStaffHasLicense (SSN, LicenseNumber) VALUES
+('678901234', 1),
+('789012345', 2),
+('890123456', 3),
+('901234567', 4),
+('123456780', 5);
+
+INSERT INTO Treatments (TreatmentID, StandardizedCost, EstimatedTime) VALUES
+(1, 200.00, 30), --Kidney Surgery
+(2, 150.00, 45), -- Xray
+(3, 300.00, 60), -- Leg surgery
+(4, 75.00, 15),  --Check up
+(5, 500.00, 90); --Heart surgery
+
+INSERT INTO BillingRecord (BillingRecordID, Date, ProceduresPerformed, MedicalSupervisors, PolicyID) VALUES
+(1, '2023-10-01', 1, 'Dr. Roberts', 1), -- Matches TreatmentID 1, cost 200.00
+(2, '2023-10-02', 2, 'Dr. Smith', 2),   -- Matches TreatmentID 2, cost 150.00
+(3, '2023-10-03', 3, 'Dr. Johnson', 3), -- Matches TreatmentID 3, cost 300.00
+(4, '2023-10-05', 4, 'Dr. Brown', 4),   -- Matches TreatmentID 4, cost 75.00
+(5, '2023-10-06', 5, 'Dr. Lee', 5),     -- Matches TreatmentID 5, cost 500.00
+(6, '2023-10-07', 1, 'Dr. Roberts', 1), -- Matches TreatmentID 1, cost 200.00
+(7, '2023-10-08', 2, 'Dr. Smith', 2),   -- Matches TreatmentID 2, cost 150.00
+(8, '2023-10-09', 3, 'Dr. Johnson', 3), -- Matches TreatmentID 3, cost 300.00
+(9, '2023-10-10', 4, 'Dr. Brown', 4),   -- Matches TreatmentID 4, cost 75.00
+(10, '2023-10-11', 5, 'Dr. Lee', 5);    -- Matches TreatmentID 5, cost 500.00
+
+
+INSERT INTO Payment (PaymentID, PaymentAmount, Type, ReceivedBy, SSN, BillingRecordID) VALUES
+(1, 200.00, 'Cash', 'Receptionist A', '123456789', 1), -- Matches TreatmentID 1, cost 200.00
+(2, 150.00, 'Cash', 'Receptionist B', '234567890', 2), -- Matches TreatmentID 2, cost 150.00
+(3, 300.00, 'Card', 'Receptionist B', '345678901', 3), -- Matches TreatmentID 3, cost 300.00
+(4, 75.00, 'Check', 'Receptionist D', '456789012', 4), -- Matches TreatmentID 4, cost 75.00
+(5, 500.00, 'Card', 'Receptionist E', '567890123', 5), -- Matches TreatmentID 5, cost 500.00
+(6, 200.00, 'Cash', 'Receptionist A', '678901234', 6), -- Matches TreatmentID 1, cost 200.00
+(7, 150.00, 'Card', 'Receptionist B', '789012345', 7), -- Matches TreatmentID 2, cost 150.00
+(8, 300.00, 'Card', 'Receptionist C', '890123456', 8), -- Matches TreatmentID 3, cost 300.00
+(9, 75.00, 'Check', 'Receptionist D', '901234567', 9), -- Matches TreatmentID 4, cost 75.00
+(10, 500.00, 'Cash', 'Receptionist E', '123456789', 10); -- Matches TreatmentID 5, cost 500.00
+
+INSERT INTO CardPayment (PaymentID, CardInfo) VALUES
+(2, 'Visa ending in 1234'),
+(5, 'Mastercard ending in 5678'),
+(8, 'Amex ending in 9012');
+
+INSERT INTO BankPayment (PaymentID, BankInfo) VALUES
+(9, 'Bank of America, Account #123456789');
+
+INSERT INTO InsurancePayment (PaymentID, PolicyNumber) VALUES
+(3, 'INS-23456'),
+(7, 'INS-34567');
+
+INSERT INTO Reviews (ReviewID, Experience, ProcedureName, SSN) VALUES
+(1, 'Excellent service and care.', 'X-Ray', '123456789'),
+(2, 'Very professional and punctual.', 'MRI', '234567890'),
+(3, 'The staff was friendly.', 'Physical Therapy', '345678901'),
+(4, 'Highly skilled doctors.', 'Surgery', '456789012'),
+(5, 'Clean facility and good atmosphere.', 'Routine Checkup', '567890123');
+
+INSERT INTO Employees (SSN, EmployeeType, Salary) VALUES
+('678901234', 'Nurse', 60000.00),
+('789012345', 'Surgical Assistant', 50000.00),
+('890123456', 'Admin Staff', 40000.00),
+('901234567', 'Front Desk', 35000.00),
+('123456780', 'Medical Assistant', 30000.00);
+
+INSERT INTO EmployeeEvaluatedByReviews (SSN, ReviewID) VALUES
+('678901234', 1),
+('789012345', 2),
+('890123456', 3),
+('901234567', 4),
+('123456780', 5);
+
+INSERT INTO Admin (SSN, AdminType, Salary) VALUES
+('123456789', 'Head Admin', 80000.00),
+('234567890', 'Assistant Admin', 45000.00);
+
+INSERT INTO MedicalHistory (MedicalHistoryID, MedicalInfo, Date, SSN) VALUES
+(1, 'Allergic to Penicillin', '2022-01-15', '123456789'),
+(2, 'Has Asthma', '2022-02-20', '234567890'),
+(3, 'Diabetic', '2022-03-18', '345678901'),
+(4, 'High Blood Pressure', '2022-04-10', '456789012'),
+(5, 'No known allergies', '2022-05-12', '567890123');
+
+INSERT INTO XRay (XRayID, XRayInfo, Date, SSN) VALUES
+(1, 'Fracture of left arm.', '2023-10-01', '123456789'),
+(2, 'Chest X-Ray.', '2023-10-02', '234567890'),
+(3, 'Back X-Ray show alignment issue.', '2023-10-03', '345678901'),
+(4, 'Knee X-Ray shows minor injury.', '2023-10-04', '456789012'),
+(5, 'Dental X-Ray shows no issues.', '2023-10-05', '567890123');
+
+INSERT INTO Medications (MedicationsID, ActiveMeds, Date, SSN) VALUES
+(1, 'Lisinopril', '2023-01-01', '123456789'),
+(2, 'Metformin', '2023-01-05', '234567890'),
+(3, 'Albuterol', '2023-01-10', '345678901'),
+(4, 'Insulin', '2023-01-15', '456789012'),
+(5, 'Aspirin', '2023-01-20', '567890123');
+
+INSERT INTO AllergyForm (AllergyFormID, AllergyInfo, Date, SSN) VALUES
+(1, 'No allergies', '2023-01-01', '123456789'),
+(2, 'Shellfish allergy', '2023-01-05', '234567890'),
+(3, 'Nut allergy', '2023-01-10', '345678901'),
+(4, 'Pollen allergy', '2023-01-15', '456789012'),
+(5, 'Dust allergy', '2023-01-20', '567890123');
+
+INSERT INTO HIPAAForm (HIPAAFormID, HIPAAInfo, Date, SSN) VALUES
+(1, 'Patient consent on file', '2023-01-01', '123456789'),
+(2, 'All documents signed', '2023-01-05', '234567890'),
+(3, 'Patient understood rights', '2023-01-10', '345678901'),
+(4, 'Confidentiality agreed', '2023-01-15', '456789012'),
+(5, 'Informed about records handling', '2023-01-20', '567890123');
+
+INSERT INTO Appointments (AppointmentID, Date, SSN, TreatmentID) VALUES
+(1, '2023-10-15', '123456789', 1),
+(2, '2023-10-16', '234567890', 2),
+(3, '2023-10-17', '345678901', 3),
+(4, '2023-10-18', '456789012', 4),
+(5, '2023-10-19', '567890123', 5);
+
+INSERT INTO Inventory (ItemName, Quantity) VALUES
+('Bandage', 100),
+('Gauze', 200),
+('Adhesive Tape', 150),
+('Scalpel', 75),
+('Syringe', 500);
+
+INSERT INTO InventoryUsedForTreatments (ItemName, TreatmentID, QuantityUsed) VALUES
+('Bandage', 1, 5),
+('Gauze', 2, 3),
+('Adhesive Tape', 3, 10),
+('Scalpel', 4, 1),
+('Syringe', 5, 2);
+
+INSERT INTO MedicalStaffPerformedOnTreatments (SSN, TreatmentID) VALUES
+('678901234', 1),
+('789012345', 2),
+('890123456', 3),
+('999999999', 4),
+('999999999', 5);
